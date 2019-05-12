@@ -1,0 +1,10 @@
+module.exports = {
+  port: 0,
+  dbUrl: '',
+  sessionSecret: '',
+
+  facebookAppId: '',
+  facebookAppSecret: '',
+  twitterConsumerKey: '',
+  twitterConsumerSecret: '',
+};

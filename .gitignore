@@ -99,4 +99,5 @@ capybara-*html
 .rvmrc
 .rvmrc.*
 
-# settings and keys
+# Mask configure files with secret credentials
+config.js
