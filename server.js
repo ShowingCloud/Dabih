@@ -1,8 +1,11 @@
 const express = require('express');
 const passport = require('passport');
+
 const OIDCStrategy = require('passport-openidconnect').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const GithubStrategy = require('passport-github').Strategy;
 
 const config = require('./config');
 
@@ -29,6 +32,20 @@ passport.use(new TwitterStrategy({
   callbackURL: 'https://sso.scs.im/auth/twitter/callback',
 },
 (token, tokenSecret, profile, done) => done(null, profile)));
+
+passport.use(new GoogleStrategy({
+  clientID: config.googleClientId,
+  clientSecret: config.googleClientSecret,
+  callbackURL: "https://oss.scs.im/auth/google/callback",
+},
+(accessToken, refreshToken, profile, done) => done(null, profile)));
+
+passport.use(new GitHubStrategy({
+  clientID: config.githubClientId,
+  clientSecret: config.githubClientSecret,
+  callbackURL: "https://oss.scs.im/auth/github/callback",
+},
+(accessToken, refreshToken, profile, done) => done(null, profile)));
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -86,6 +103,24 @@ app.get('/auth/twitter',
 
 app.get('/auth/twitter/callback',
   passport.authenticate('twitter', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+app.get('/auth/google',
+  passport.authenticate('google'));
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+app.get('/auth/github',
+  passport.authenticate('github'));
+
+app.get('/auth/github/callback',
+  passport.authenticate('github', {
     successRedirect: '/',
     failureRedirect: '/login',
   }));
