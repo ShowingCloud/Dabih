@@ -11,6 +11,8 @@
 @import '../node_modules/bootstrap/scss/_mixins';
 @import '../node_modules/bootstrap/scss/_variables';
 
+@import '../node_modules/brand-colors/dist/latest/scss/brand-colors.latest.scss';
+
 $line-height-computed: ($font-size-base * $line-height-base);
 $padding-base-vertical: $btn-padding-y;
 $padding-base-horizontal: $btn-padding-x;
@@ -105,24 +107,26 @@ $bs-height-xs:   ($font-size-small * 1.2 + $padding-small-vertical + 0.063) !def
 }
 
 
-.btn-adn           { @include btn-social(#d87a68); }
-.btn-bitbucket     { @include btn-social(#205081); }
-.btn-dropbox       { @include btn-social(#1087dd); }
-.btn-facebook      { @include btn-social(#3b5998); }
-.btn-flickr        { @include btn-social(#ff0084); }
-.btn-foursquare    { @include btn-social(#f94877); }
-.btn-github        { @include btn-social(#444444); }
-.btn-google        { @include btn-social(#dd4b39); }
-.btn-instagram     { @include btn-social(#3f729b); }
-.btn-linkedin      { @include btn-social(#007bb6); }
-.btn-microsoft     { @include btn-social(#2672ec); }
-.btn-odnoklassniki { @include btn-social(#f4731c); }
-.btn-openid        { @include btn-social(#f7931e); }
-.btn-pinterest     { @include btn-social(#cb2027); }
-.btn-reddit        { @include btn-social(#eff7ff); }
-.btn-soundcloud    { @include btn-social(#ff5500); }
-.btn-tumblr        { @include btn-social(#2c4762); }
-.btn-twitter       { @include btn-social(#55acee); }
-.btn-vimeo         { @include btn-social(#1ab7ea); }
-.btn-vk            { @include btn-social(#587ea3); }
-.btn-yahoo         { @include btn-social(#720e9e); }
+//.btn-adn           { @include btn-social($bc-adn); }
+.btn-alipay        { @include btn-social($bc-alibaba); }
+.btn-bitbucket     { @include btn-social($bc-bitbucket); }
+.btn-dropbox       { @include btn-social($bc-dropbox); }
+.btn-facebook      { @include btn-social($bc-facebook); }
+.btn-flickr        { @include btn-social($bc-flickr-2); }
+.btn-foursquare    { @include btn-social($bc-foursquare); }
+.btn-github        { @include btn-social($bc-github-8); }
+.btn-google        { @include btn-social($bc-google-plus); }
+.btn-instagram     { @include btn-social($bc-instagram); }
+.btn-linkedin      { @include btn-social($bc-linkedin); }
+.btn-microsoft     { @include btn-social($bc-microsoft-3); }
+.btn-odnoklassniki { @include btn-social($bc-odnoklassniki); }
+.btn-openid        { @include btn-social($bc-carrot-5); }
+.btn-pinterest     { @include btn-social($bc-pinterest); }
+.btn-qq            { @include btn-social(#127ac2); }
+.btn-reddit        { @include btn-social($bc-reddit-3); }
+.btn-soundcloud    { @include btn-social($bc-soundcloud-2); }
+.btn-tumblr        { @include btn-social($bc-tumblr); }
+.btn-twitter       { @include btn-social($bc-twitter); }
+.btn-vimeo         { @include btn-social($bc-vimeo-2); }
+//.btn-vk            { @include btn-social($bc-vk); }
+.btn-yahoo         { @include btn-social($bc-yahoo); }
