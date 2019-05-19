@@ -24,19 +24,26 @@
     "url": "https://github.com/ShowingCloud/Dabih/issues"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.8.2",
+    "@sokratis/passport-linkedin-oauth2": "^2.1.0",
     "body-parser": "^1.19.0",
+    "bootstrap": "^4.3.1",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "^1.4.4",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-session": "^1.16.1",
+    "jquery": "^3.4.1",
     "morgan": "^1.9.1",
     "passport": "^0.2.2",
+    "passport-alipay-oauth2": "github:ShowingCloud/passport-alipay",
     "passport-facebook": "^3.0.0",
     "passport-github": "^1.1.0",
     "passport-google-oauth": "^2.0.0",
     "passport-openidconnect": "^0.0.1",
-    "passport-twitter": "^1.0.4"
+    "passport-qq": "^0.1.0",
+    "passport-twitter": "^1.0.4",
+    "popper.js": "^1.15.0"
   },
   "eslintConfig": {
     "env": {

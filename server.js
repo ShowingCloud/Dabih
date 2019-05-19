@@ -5,9 +5,12 @@ const OIDCStrategy = require('passport-openidconnect').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-const GithubStrategy = require('passport-github').Strategy;
+const GitHubStrategy = require('passport-github').Strategy;
+const QQStrategy = require('passport-qq').Strategy;
+const LinkedInStrategy = require('@sokratis/passport-linkedin-oauth2').Strategy;
+const AlipayStrategy = require('passport-alipay-oauth2').Strategy;
 
-const config = require('./config');
+const config = require('./config/config');
 
 
 passport.use(new OIDCStrategy({
@@ -36,14 +39,37 @@ passport.use(new TwitterStrategy({
 passport.use(new GoogleStrategy({
   clientID: config.googleClientId,
   clientSecret: config.googleClientSecret,
-  callbackURL: "https://oss.scs.im/auth/google/callback",
+  callbackURL: 'https://sso.scs.im/auth/google/callback',
+  scope: ['openid', 'email', 'profile'],
 },
 (accessToken, refreshToken, profile, done) => done(null, profile)));
 
 passport.use(new GitHubStrategy({
-  clientID: config.githubClientId,
-  clientSecret: config.githubClientSecret,
-  callbackURL: "https://oss.scs.im/auth/github/callback",
+  clientID: config.gitHubClientId,
+  clientSecret: config.gitHubClientSecret,
+  callbackURL: 'https://sso.scs.im/auth/github/callback',
+},
+(accessToken, refreshToken, profile, done) => done(null, profile)));
+
+passport.use(new QQStrategy({
+  clientID: config.qqAppId,
+  clientSecret: config.qqAppKey,
+  callbackURL: 'https://sso.scs.im/auth/qq/callback',
+},
+(accessToken, refreshToken, profile, done) => done(null, profile)));
+
+passport.use(new LinkedInStrategy({
+  clientID: config.linkedInClientId,
+  clientSecret: config.linkedInClientSecret,
+  callbackURL: 'https://sso.scs.im/auth/linkedin/callback',
+},
+(accessToken, refreshToken, profile, done) => done(null, profile)));
+
+passport.use(new AlipayStrategy({
+  app_id: config.alipayAppId,
+  alipay_public_key: config.alipayPublicKey,
+  private_key: config.alipayAppPrivateKey,
+  callbackURL: 'https://sso.scs.im/auth/alipay/callback',
 },
 (accessToken, refreshToken, profile, done) => done(null, profile)));
 
@@ -64,7 +90,16 @@ app.set('view engine', 'ejs');
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: config.sessionSecret, resave: true, saveUninitialized: true }));
+app.use(require('express-session')({
+  secret: config.sessionSecret,
+  resave: true,
+  saveUninitialized: true,
+}));
+
+app.use(express.static('public'));
+app.use(express.static(`${__dirname}/node_modules/jquery/dist`));
+app.use(express.static(`${__dirname}/node_modules/bootstrap/dist`));
+app.use(express.static(`${__dirname}/node_modules/@fortawesome/fontawesome-free`));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -121,6 +156,33 @@ app.get('/auth/github',
 
 app.get('/auth/github/callback',
   passport.authenticate('github', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+app.get('/auth/qq',
+  passport.authenticate('qq'));
+
+app.get('/auth/qq/callback',
+  passport.authenticate('qq', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+app.get('/auth/linkedin',
+  passport.authenticate('linkedin'));
+
+app.get('/auth/linkedin/callback',
+  passport.authenticate('linkedin', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+app.get('/auth/alipay',
+  passport.authenticate('Alipay'));
+
+app.get('/auth/alipay/callback',
+  passport.authenticate('Alipay', {
     successRedirect: '/',
     failureRedirect: '/login',
   }));
