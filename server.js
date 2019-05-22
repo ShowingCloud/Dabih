@@ -1,5 +1,7 @@
 const express = require('express');
 const passport = require('passport');
+const session = require('express-session');
+const redis = require('connect-redis')(session);
 
 const OIDCStrategy = require('passport-openidconnect').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
@@ -9,6 +11,7 @@ const GitHubStrategy = require('passport-github').Strategy;
 const QQStrategy = require('passport-qq').Strategy;
 const LinkedInStrategy = require('@sokratis/passport-linkedin-oauth2').Strategy;
 const AlipayStrategy = require('passport-alipay-oauth2').Strategy;
+const OAuth2Strategy = require('passport-oauth2').Strategy;
 
 const config = require('./config/config');
 
@@ -66,10 +69,47 @@ passport.use(new LinkedInStrategy({
 (accessToken, refreshToken, profile, done) => done(null, profile)));
 
 passport.use(new AlipayStrategy({
-  app_id: config.alipayAppId,
-  alipay_public_key: config.alipayPublicKey,
-  private_key: config.alipayAppPrivateKey,
+  appId: config.alipayAppId,
+  alipayPublicKey: config.alipayPublicKey,
+  privateKey: config.alipayAppPrivateKey,
   callbackURL: 'https://sso.scs.im/auth/alipay/callback',
+},
+(accessToken, refreshToken, profile, done) => done(null, profile)));
+
+passport.use(new OAuth2Strategy({
+  authorizationURL: 'https://openapi.waimai.meituan.com/oauth/authorize',
+  tokenURL: 'https://openapi.waimai.meituan.com/oauth/access_token',
+  clientID: config.meituanAppId,
+  clientSecret: config.meituanAppSecret,
+  callbackURL: 'https://sso.scs.im/auth/meituan/callback',
+},
+(accessToken, refreshToken, profile, done) => done(null, profile)));
+
+passport.use(new OAuth2Strategy({
+  authorizationURL: 'https://api.weibo.com/oauth2/authorize',
+  tokenURL: 'https://api.weibo.com/oauth2/access_token',
+  clientID: config.weiboAppId,
+  clientSecret: config.weiboAppSecret,
+  callbackURL: 'https://sso.scs.im/auth/weibo/callback',
+},
+(accessToken, refreshToken, profile, done) => done(null, profile)));
+
+passport.use(new OAuth2Strategy({
+  authorizationURL: 'https://account.teambition.com/oauth2/authorize',
+  tokenURL: 'https://account.teambition.com/oauth2/access_token',
+  clientID: config.teambitionClientId,
+  clientSecret: config.teambitionClientSecret,
+  callbackURL: 'https://sso.scs.im/auth/teambition/callback',
+},
+(accessToken, refreshToken, profile, done) => done(null, profile)));
+
+passport.use(new OAuth2Strategy({
+  authorizationURL: 'https://oapi.dingtalk.com/connect/oauth2/sns_authorize',
+  tokenURL: 'https://oapi.dingtalk.com/connect/oauth2/sns_token',
+  clientID: config.dingTalkAppId,
+  clientSecret: config.dingTalkAppSecret,
+  callbackURL: 'https://sso.scs.im/auth/teambition/callback',
+  scope: 'snsapi_login',
 },
 (accessToken, refreshToken, profile, done) => done(null, profile)));
 
@@ -90,7 +130,8 @@ app.set('view engine', 'ejs');
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({
+app.use(session({
+  store: new redis({ url: config.sessionStorageURL }),
   secret: config.sessionSecret,
   resave: true,
   saveUninitialized: true,
@@ -179,10 +220,46 @@ app.get('/auth/linkedin/callback',
   }));
 
 app.get('/auth/alipay',
-  passport.authenticate('Alipay'));
+  passport.authenticate('alipay'));
 
 app.get('/auth/alipay/callback',
-  passport.authenticate('Alipay', {
+  passport.authenticate('alipay', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+app.get('/auth/meituan',
+  passport.authenticate('oauth2'));
+
+app.get('/auth/meituan/callback',
+  passport.authenticate('oauth2', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+app.get('/auth/weibo',
+  passport.authenticate('oauth2'));
+
+app.get('/auth/weibo/callback',
+  passport.authenticate('oauth2', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+app.get('/auth/teambition',
+  passport.authenticate('oauth2'));
+
+app.get('/auth/teambition/callback',
+  passport.authenticate('oauth2', {
+    successRedirect: '/',
+    failureRedirect: '/login',
+  }));
+
+app.get('/auth/dingtalk',
+  passport.authenticate('oauth2'));
+
+app.get('/auth/dingtalk/callback',
+  passport.authenticate('oauth2', {
     successRedirect: '/',
     failureRedirect: '/login',
   }));
