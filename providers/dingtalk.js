@@ -8,13 +8,26 @@ module.exports = (list) => {
     list.push('dingtalk');
   }
 
-  return new OAuth2Strategy({
+  const strategy = new OAuth2Strategy({
     authorizationURL: 'https://oapi.dingtalk.com/connect/oauth2/sns_authorize',
     tokenURL: 'https://oapi.dingtalk.com/connect/oauth2/sns_token',
     clientID: config.dingTalkAppId,
     clientSecret: config.dingTalkAppSecret,
-    callbackURL: 'https://sso.scs.im/auth/teambition/callback',
+    callbackURL: 'https://sso.scs.im/auth/dingtalk/callback',
     scope: 'snsapi_login',
   },
   (accessToken, refreshToken, profile, done) => done(null, profile));
+
+  strategy.authorizationParams = () => {
+    return {
+      appid: config.dingTalkAppId,
+    };
+  };
+
+  strategy.tokenParams = () => {
+    return {
+      appid: config.dingTalkAppId,
+    };
+  };
+  return strategy;
 };

@@ -40,6 +40,7 @@ $bs-height-xs:   ($font-size-small * 1.2 + $padding-small-vertical + 0.063) !def
     left: 0;
     top: 0;
     bottom: 0;
+    margin: auto;
     width: $bs-height-base;
     line-height: ($bs-height-base + 0.125);
     font-size: 1.6em;
@@ -119,14 +120,14 @@ $bs-height-xs:   ($font-size-small * 1.2 + $padding-small-vertical + 0.063) !def
 .btn-google			{ @include btn-social($bc-google-plus); }
 .btn-instagram		{ @include btn-social($bc-instagram); }
 .btn-linkedin		{ @include btn-social($bc-linkedin); }
-.btn-meituan		{ @include btn-social(#fed130); }
+.btn-meituan		{ @include btn-social(#e35925); }
 .btn-microsoft		{ @include btn-social($bc-microsoft-3); }
 .btn-odnoklassniki	{ @include btn-social($bc-odnoklassniki); }
 .btn-openid			{ @include btn-social($bc-carrot-5); }
 .btn-pinterest		{ @include btn-social($bc-pinterest); }
 .btn-qq			    { @include btn-social(#127ac2); }
 .btn-reddit			{ @include btn-social($bc-reddit-3); }
-.btn-showingcloud	{ @include btn-social(#8ac5b5); }
+.btn-showingcloud	{ @include btn-social(#00cba9); }
 .btn-soundcloud		{ @include btn-social($bc-soundcloud-2); }
 .btn-teambition		{ @include btn-social(#383838); }
 .btn-tumblr			{ @include btn-social($bc-tumblr); }

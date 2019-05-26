@@ -8,7 +8,7 @@ module.exports = (list) => {
     list.push('meituan');
   }
 
-  return new OAuth2Strategy({
+  const strategy = new OAuth2Strategy({
     authorizationURL: 'https://openapi.waimai.meituan.com/oauth/authorize',
     tokenURL: 'https://openapi.waimai.meituan.com/oauth/access_token',
     clientID: config.meituanAppId,
@@ -16,4 +16,19 @@ module.exports = (list) => {
     callbackURL: 'https://sso.scs.im/auth/meituan/callback',
   },
   (accessToken, refreshToken, profile, done) => done(null, profile));
+
+  strategy.authorizationParams = () => {
+    return {
+      app_id: config.meituanAppId,
+    };
+  };
+
+  strategy.tokenParams = () => {
+    return {
+      app_id: config.meituanAppId,
+      secret: config.meituanAppSecret,
+    };
+  };
+
+  return strategy;
 };
