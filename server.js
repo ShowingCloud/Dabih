@@ -5,6 +5,7 @@ const RedisStore = require('connect-redis')(Session);
 
 const routes = require('./providers/routes');
 const config = require('./config/config');
+require('./models/mongodb');
 const IdentityFederation = require('./models/identityFederation');
 
 
@@ -44,7 +45,7 @@ app.use(Express.static(`${__dirname}/node_modules/bootstrap/dist`));
 app.use(Express.static(`${__dirname}/node_modules/@fortawesome/fontawesome-free`));
 
 app.use(require('morgan')('combined'));
-app.use(require('cookie-parser')());
+app.use(require('cookie-parser')(config.sessionSecret));
 app.use(require('body-parser').urlencoded({ extended: true }));
 
 app.use(Session({

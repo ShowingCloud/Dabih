@@ -10,13 +10,27 @@ module.exports = (app, provider, path) => {
     passport.authenticate(provider, {
       failureRedirect: '/login',
     }), async (req, res) => {
-      const [identity_id, identity_provider] = await Promise.all([
-        global.IdentityFederation.findById(req.session.user._id).exec(),
-        global.IdentityFederation.findOne({ [`${provider}Id`]: req.user.id }).exec()
-      ]);
+      let identity;
 
       if (req.session.user) {
-        identity = await global.IdentityFederation.findById(req.session.user._id).exec();
+        const [identity_id, identity_provider] = await Promise.all([
+          global.IdentityFederation.findById(req.session.user._id),
+          global.IdentityFederation.findOne({ [`${provider}Id`]: req.user.id })
+        ]);
+
+        if (identity_id && identity_provider) {
+          if (identity_id === identity_provider) {
+            identity = identity_id;
+          } else {
+            identity = identity_id;
+            /* DO THE OTHER THINGS */
+          }
+        } else {
+          identity = identity_id ? identity_id :
+            identity_provider ? identity_provider :
+            new global.IdentityFederation();
+        }
+
       } else {
         identity = await global.IdentityFederation.findOne({ [`${provider}Id`]: req.user.id }).exec()
           || new global.IdentityFederation();
