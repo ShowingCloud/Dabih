@@ -13,24 +13,21 @@ module.exports = (app, provider, path) => {
       let identity;
 
       if (req.session.user) {
-        const [identity_id, identity_provider] = await Promise.all([
+        const [identityId, identityProvider] = await Promise.all([
           global.IdentityFederation.findById(req.session.user._id),
-          global.IdentityFederation.findOne({ [`${provider}Id`]: req.user.id })
+          global.IdentityFederation.findOne({ [`${provider}Id`]: req.user.id }),
         ]);
 
-        if (identity_id && identity_provider) {
-          if (identity_id === identity_provider) {
-            identity = identity_id;
+        if (identityId && identityProvider) {
+          if (identityId === identityProvider) {
+            identity = identityId;
           } else {
-            identity = identity_id;
+            identity = identityId;
             /* DO THE OTHER THINGS */
           }
         } else {
-          identity = identity_id ? identity_id :
-            identity_provider ? identity_provider :
-            new global.IdentityFederation();
+          identity = identityId || identityProvider || new global.IdentityFederation();
         }
-
       } else {
         identity = await global.IdentityFederation.findOne({ [`${provider}Id`]: req.user.id }).exec()
           || new global.IdentityFederation();

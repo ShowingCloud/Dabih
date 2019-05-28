@@ -9,7 +9,7 @@ require('./models/mongodb');
 const IdentityFederation = require('./models/identityFederation');
 
 
-let providerList = [];
+const providerList = [];
 Passport.use(require('./providers/oidc')(providerList));
 Passport.use(require('./providers/facebook')(providerList));
 Passport.use(require('./providers/twitter')(providerList));
@@ -52,7 +52,7 @@ app.use(Session({
   store: new RedisStore({
     url: config.sessionStorageURL,
     logErrors: true,
-    prefix: "Dabih-Session:"
+    prefix: 'Dabih-Session:',
   }),
   secret: config.sessionSecret,
   resave: true,

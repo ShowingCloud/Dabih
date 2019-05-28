@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 module.exports = (list) => {
-  let schema = {};
+  const schema = {};
   list.forEach((provider) => {
     schema[`${provider}Id`] = { type: String, unique: true };
     schema[`${provider}Profile`] = Object;
