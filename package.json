@@ -36,6 +36,7 @@
     "express": "^4.17.0",
     "express-session": "^1.16.1",
     "jquery": "^3.4.1",
+    "mongoose": "^5.5.11",
     "morgan": "^1.9.1",
     "passport": "^0.2.2",
     "passport-alipay-oauth2": "github:ShowingCloud/passport-alipay",

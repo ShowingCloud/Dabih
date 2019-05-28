@@ -1,10 +1,12 @@
 const Express = require('express');
 const Passport = require('passport');
 const Session = require('express-session');
-const Redis = require('connect-redis')(Session);
+const RedisStore = require('connect-redis')(Session);
 
 const routes = require('./providers/routes');
 const config = require('./config/config');
+const db = require('./models/mongodb.js');
+const IdentityFederation = require('./models/identityFederation');
 
 
 let providerList = [];
@@ -21,12 +23,16 @@ Passport.use('weibo', require('./providers/weibo')(providerList));
 Passport.use('teambition', require('./providers/teambition')(providerList));
 Passport.use('dingtalk', require('./providers/dingtalk')(providerList));
 
-Passport.serializeUser((user, done) => {
-  done(null, user);
+global.IdentityFederation = IdentityFederation(providerList);
+
+Passport.serializeUser((identity, done) => {
+  done(null, identity.id);
 });
 
-Passport.deserializeUser((obj, done) => {
-  done(null, obj);
+Passport.deserializeUser((id, done) => {
+  IdentityFederation.findById(id, (err, user) => {
+    done(err, user);
+  });
 });
 
 
@@ -35,21 +41,21 @@ const app = Express();
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
 
+app.use(Express.static('public'));
+app.use(Express.static(`${__dirname}/node_modules/jquery/dist`));
+app.use(Express.static(`${__dirname}/node_modules/bootstrap/dist`));
+app.use(Express.static(`${__dirname}/node_modules/@fortawesome/fontawesome-free`));
+
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 
 app.use(Session({
-  store: new Redis({ url: config.sessionStorageURL }),
+  store: new RedisStore({ url: config.sessionStorageURL }),
   secret: config.sessionSecret,
   resave: true,
   saveUninitialized: true,
 }));
-
-app.use(Express.static('public'));
-app.use(Express.static(`${__dirname}/node_modules/jquery/dist`));
-app.use(Express.static(`${__dirname}/node_modules/bootstrap/dist`));
-app.use(Express.static(`${__dirname}/node_modules/@fortawesome/fontawesome-free`));
 
 app.use(Passport.initialize());
 app.use(Passport.session());
@@ -66,8 +72,8 @@ app.get('/login',
   });
 
 providerList.forEach((provider) => {
-  if (provider === 'openidconnect') {
-    routes(app, provider, 'idp');
+  if (provider === 'oidc') {
+    routes(app, provider, 'showingcloud');
   } else {
     routes(app, provider);
   }

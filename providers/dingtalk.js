@@ -18,16 +18,8 @@ module.exports = (list) => {
   },
   (accessToken, refreshToken, profile, done) => done(null, profile));
 
-  strategy.authorizationParams = () => {
-    return {
-      appid: config.dingTalkAppId,
-    };
-  };
+  strategy.authorizationParams = () => ({ appid: config.dingTalkAppId });
+  strategy.tokenParams = () => ({ appid: config.dingTalkAppId });
 
-  strategy.tokenParams = () => {
-    return {
-      appid: config.dingTalkAppId,
-    };
-  };
   return strategy;
 };

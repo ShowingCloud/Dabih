@@ -17,18 +17,11 @@ module.exports = (list) => {
   },
   (accessToken, refreshToken, profile, done) => done(null, profile));
 
-  strategy.authorizationParams = () => {
-    return {
-      app_id: config.meituanAppId,
-    };
-  };
-
-  strategy.tokenParams = () => {
-    return {
-      app_id: config.meituanAppId,
-      secret: config.meituanAppSecret,
-    };
-  };
+  strategy.authorizationParams = () => ({ app_id: config.meituanAppId });
+  strategy.tokenParams = () => ({
+    app_id: config.meituanAppId,
+    secret: config.meituanAppSecret,
+  });
 
   return strategy;
 };

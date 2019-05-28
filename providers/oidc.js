@@ -2,7 +2,7 @@ const OIDCStrategy = require('passport-openidconnect').Strategy;
 
 module.exports = (list) => {
   if (list) {
-    list.push('openidconnect');
+    list.push('oidc');
   }
 
   return new OIDCStrategy({
@@ -12,5 +12,5 @@ module.exports = (list) => {
     tokenURL: 'https://auth.scs.im/token',
     callbackURL: 'https://sso.scs.im/callback',
   },
-  (token, tokenSecret, profile, cb) => cb(null, profile));
+  (token, tokenSecret, profile, done) => done(null, profile));
 };
