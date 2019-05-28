@@ -5,7 +5,6 @@ const RedisStore = require('connect-redis')(Session);
 
 const routes = require('./providers/routes');
 const config = require('./config/config');
-const db = require('./models/mongodb.js');
 const IdentityFederation = require('./models/identityFederation');
 
 
@@ -25,14 +24,12 @@ Passport.use('dingtalk', require('./providers/dingtalk')(providerList));
 
 global.IdentityFederation = IdentityFederation(providerList);
 
-Passport.serializeUser((identity, done) => {
-  done(null, identity.id);
+Passport.serializeUser((profile, done) => {
+  done(null, profile);
 });
 
-Passport.deserializeUser((id, done) => {
-  IdentityFederation.findById(id, (err, user) => {
-    done(err, user);
-  });
+Passport.deserializeUser((profile, done) => {
+  done(null, profile);
 });
 
 
@@ -51,7 +48,11 @@ app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 
 app.use(Session({
-  store: new RedisStore({ url: config.sessionStorageURL }),
+  store: new RedisStore({
+    url: config.sessionStorageURL,
+    logErrors: true,
+    prefix: "Dabih-Session:"
+  }),
   secret: config.sessionSecret,
   resave: true,
   saveUninitialized: true,
