@@ -24,37 +24,40 @@ module.exports = (list) => {
   strategy.authorizationParams = () => ({ appid: config.dingTalkAppId });
   strategy.tokenParams = () => ({ accessKey: config.dingTalkAppId });
 
-  strategy.userProfile = (accessToken, done) => (done(null, strategy.profile));
+  strategy._oauth2.getOAuthAccessToken = (code, params, done) => (done(null, code, null, params));
 
-  strategy._oauth2.getOAuthAccessToken = (code, params, done) => {
-    const param = params;
+  strategy.userProfile = (accessToken, done) => {
+    const params = {
+      accessKey: config.dingTalkAppId,
+    };
+
     const timestamp = String(Date.now());
-    param.timestamp = timestamp;
-    param.signature = crypto.createHmac('sha256', config.dingTalkAppSecret).update(timestamp).digest('base64');
+    params.timestamp = timestamp;
+    params.signature = crypto.createHmac('sha256', config.dingTalkAppSecret).update(timestamp).digest('base64');
 
-    strategy._oauth2._request('POST', `https://oapi.dingtalk.com/sns/getuserinfo_bycode?${querystring.stringify(param)}`,
-      {}, JSON.stringify({ tmp_auth_code: code }), code, (err, body) => {
+    strategy._oauth2._request('POST', `https://oapi.dingtalk.com/sns/getuserinfo_bycode?${querystring.stringify(params)}`,
+      {}, JSON.stringify({ tmp_auth_code: accessToken }), accessToken, (err, body) => {
         if (err) {
-          done(err, code, null, param);
+          done(err);
         }
 
         try {
           const json = JSON.parse(body);
 
           if (json.errcode) {
-            done(json.errmsg, code, null, param);
+            done(json.errmsg);
           }
 
-          strategy.profile = { provider: 'dingtalk' };
-          strategy.profile.id = json.user_info.openid;
-          strategy.profile.nickname = json.user_info.nick;
-          strategy.profile.unionid = json.user_info.unionid;
-          strategy.profile._raw = body;
-          strategy.profile._json = json.user_info;
+          const profile = { provider: 'dingtalk' };
+          profile.id = json.user_info.openid;
+          profile.nickname = json.user_info.nick;
+          profile.unionid = json.user_info.unionid;
+          profile._raw = body;
+          profile._json = json.user_info;
 
-          done(null, code, null, param);
+          done(null, profile);
         } catch (error) {
-          done(error, code, null, param);
+          done(error);
         }
       });
   };
