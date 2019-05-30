@@ -23,5 +23,27 @@ module.exports = (list) => {
     secret: config.meituanAppSecret,
   });
 
+  strategy.userProfile = (accessToken, done) => {
+    console.log(accessToken);
+    strategy._oauth2.get(`https://openapi.waimai.meituan.com/oauth/userinfo?app_id=${config.meituanAppId}&secret=${config.meituanAppSecret}`,
+      accessToken, (err, body) => {
+        try {
+          const json = JSON.parse(body);
+
+          const profile = { provider: 'meituan' };
+          profile.id = json.openid;
+          profile.nickname = json.nicknamee;
+          profile.avatar = json.avatar;
+          profile.phone = json.desensitization_phone;
+          profile._raw = body;
+          profile._json = json;
+
+          done(null, profile);
+        } catch (error) {
+          done(error);
+        }
+      });
+  };
+
   return strategy;
 };

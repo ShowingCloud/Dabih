@@ -19,11 +19,11 @@ module.exports = (app, provider, path) => {
         ]);
 
         if (identityId && identityProvider) {
-          if (identityId === identityProvider) {
+          if (identityId.id === identityProvider.id) {
             identity = identityId;
           } else {
             identity = identityId;
-            /* DO THE OTHER THINGS */
+            // DO THE OTHER THINGS
           }
         } else {
           identity = identityId || identityProvider || new global.IdentityFederation();
@@ -34,7 +34,7 @@ module.exports = (app, provider, path) => {
       }
 
       identity[`${provider}Id`] = req.user.id;
-      identity[`${provider}Profile`] = req.user._json;
+      identity[`${provider}Profile`] = req.user._json || req.user._profileJson;
       await identity.save();
 
       req.session.user = identity;

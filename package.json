@@ -47,7 +47,9 @@
     "passport-openidconnect": "^0.0.1",
     "passport-qq": "^0.1.0",
     "passport-twitter": "^1.0.4",
-    "popper.js": "^1.15.0"
+    "passport-weibo": "^0.1.2",
+    "popper.js": "^1.15.0",
+    "querystring": "^0.2.0"
   },
   "eslintConfig": {
     "env": {

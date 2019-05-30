@@ -19,7 +19,7 @@ Passport.use(require('./providers/qq')(providerList));
 Passport.use(require('./providers/linkedin')(providerList));
 Passport.use(require('./providers/alipay')(providerList));
 Passport.use('meituan', require('./providers/meituan')(providerList));
-Passport.use('weibo', require('./providers/weibo')(providerList));
+Passport.use(require('./providers/weibo')(providerList));
 Passport.use('teambition', require('./providers/teambition')(providerList));
 Passport.use('dingtalk', require('./providers/dingtalk')(providerList));
 
