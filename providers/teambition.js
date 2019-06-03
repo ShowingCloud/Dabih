@@ -17,6 +17,8 @@ module.exports = (list) => {
   },
   (accessToken, refreshToken, profile, done) => done(null, profile));
 
+  strategy.name = 'teambition';
+
   strategy.userProfile = (accessToken, done) => {
     strategy._oauth2.get('https://api.teambition.com/users/me', accessToken, (err, body) => {
       if (err) {

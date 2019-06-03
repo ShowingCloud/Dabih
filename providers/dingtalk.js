@@ -21,6 +21,7 @@ module.exports = (list) => {
   },
   (accessToken, refreshToken, profile, done) => done(null, profile));
 
+  strategy.name = 'dingtalk';
   strategy.authorizationParams = () => ({ appid: config.dingTalkAppId });
   strategy.tokenParams = () => ({ accessKey: config.dingTalkAppId });
 

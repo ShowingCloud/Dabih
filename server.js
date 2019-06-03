@@ -18,10 +18,10 @@ Passport.use(require('./providers/github')(providerList));
 Passport.use(require('./providers/qq')(providerList));
 Passport.use(require('./providers/linkedin')(providerList));
 Passport.use(require('./providers/alipay')(providerList));
-Passport.use('meituan', require('./providers/meituan')(providerList));
+Passport.use(require('./providers/meituan')(providerList));
 Passport.use(require('./providers/weibo')(providerList));
-Passport.use('teambition', require('./providers/teambition')(providerList));
-Passport.use('dingtalk', require('./providers/dingtalk')(providerList));
+Passport.use(require('./providers/teambition')(providerList));
+Passport.use(require('./providers/dingtalk')(providerList));
 
 global.IdentityFederation = IdentityFederation(providerList);
 

@@ -17,6 +17,7 @@ module.exports = (list) => {
   },
   (accessToken, refreshToken, profile, done) => done(null, profile));
 
+  strategy.name = 'meituan';
   strategy.authorizationParams = () => ({ app_id: config.meituanAppId });
   strategy.tokenParams = () => ({
     app_id: config.meituanAppId,
