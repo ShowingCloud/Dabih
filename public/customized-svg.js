@@ -6,7 +6,7 @@ let _WINDOW = {};
 
 try {
   if (typeof window !== 'undefined') _WINDOW = window;
-} catch (e) {}
+} catch (e) { /* empty block statement */ }
 
 const WINDOW = _WINDOW;
 
@@ -23,7 +23,8 @@ function bunker(fn) {
   }
 }
 
-function _defineProperty(obj, key, value) {
+function _defineProperty(o, key, value) {
+  const obj = o;
   if (key in obj) {
     Object.defineProperty(obj, key, {
       value,
@@ -38,9 +39,9 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-function _objectSpread(target) {
-  arguments.forEach((i) => {
-    const source = arguments[i] != null ? arguments[i] : {};
+function _objectSpread(target, ...args) {
+  [target, ...args].forEach((i) => {
+    const source = args[i] != null ? args[i] : {};
     let ownKeys = Object.keys(source);
 
     if (typeof Object.getOwnPropertySymbols === 'function') {
@@ -62,8 +63,8 @@ if (!w[NAMESPACE_IDENTIFIER].hooks) w[NAMESPACE_IDENTIFIER].hooks = {};
 if (!w[NAMESPACE_IDENTIFIER].shims) w[NAMESPACE_IDENTIFIER].shims = [];
 const namespace = w[NAMESPACE_IDENTIFIER];
 
-function defineIcons(prefix, icons) {
-  const params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+function defineIcons(prefix, icons, ...args) {
+  const params = [prefix, icons, ...args].length > 2 && args;
   const _params$skipHooks = params.skipHooks;
   const skipHooks = _params$skipHooks === undefined ? false : _params$skipHooks;
   const normalized = Object.keys(icons).reduce((acc, iconName) => {

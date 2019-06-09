@@ -36,6 +36,7 @@
     "express": "^4.17.0",
     "express-session": "^1.16.1",
     "jquery": "^3.4.1",
+    "moment": "^2.24.0",
     "mongoose": "^5.5.11",
     "morgan": "^1.9.1",
     "passport": "^0.2.2",
@@ -48,8 +49,7 @@
     "passport-qq": "^0.1.0",
     "passport-twitter": "^1.0.4",
     "passport-weibo": "^0.1.2",
-    "popper.js": "^1.15.0",
-    "querystring": "^0.2.0"
+    "popper.js": "^1.15.0"
   },
   "eslintConfig": {
     "env": {
