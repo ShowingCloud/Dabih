@@ -1,5 +1,6 @@
 const Express = require('express');
 const Passport = require('passport');
+const Helmet = require('helmet');
 const Session = require('express-session');
 const RedisStore = require('connect-redis')(Session);
 
@@ -10,7 +11,7 @@ const IdentityFederation = require('./models/identityFederation');
 
 
 const providerList = [];
-Passport.use(require('./providers/oidc')(providerList));
+Passport.use(require('./providers/openidconnect')(providerList));
 Passport.use(require('./providers/facebook')(providerList));
 Passport.use(require('./providers/twitter')(providerList));
 Passport.use(require('./providers/google')(providerList));
@@ -35,6 +36,7 @@ Passport.deserializeUser((profile, done) => {
 
 
 const app = Express();
+app.use(Helmet());
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
@@ -49,15 +51,19 @@ app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')(config.sessionSecret));
 app.use(require('body-parser').urlencoded({ extended: true }));
 
+app.set('trust proxy', 1);
 app.use(Session({
+  cookie: {
+    secure: true,
+  },
+  resave: false,
+  saveUninitialized: false,
+  secret: [config.sessionSecret, ...config.otherSessionSecrets],
   store: new RedisStore({
     url: config.sessionStorageURL,
     logErrors: true,
     prefix: 'Dabih-Session:',
   }),
-  secret: config.sessionSecret,
-  resave: true,
-  saveUninitialized: true,
 }));
 
 app.use(Passport.initialize());
@@ -75,7 +81,7 @@ app.get('/login',
   });
 
 providerList.forEach((provider) => {
-  if (provider === 'oidc') {
+  if (provider === 'openidconnect') {
     routes(app, provider, 'showingcloud');
   } else {
     routes(app, provider);

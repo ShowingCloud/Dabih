@@ -1,16 +1,19 @@
 const OIDCStrategy = require('passport-openidconnect').Strategy;
 
+const config = require('../config/config');
+
+
 module.exports = (list) => {
   if (list) {
-    list.push('oidc');
+    list.push('openidconnect');
   }
 
   return new OIDCStrategy({
-    clientID: 'sso',
-    clientSecret: 'sso_secret',
+    clientID: config.oidcClientId,
+    clientSecret: config.oidcClientSecret,
     authorizationURL: 'https://auth.scs.im/auth',
     tokenURL: 'https://auth.scs.im/token',
-    callbackURL: 'https://sso.scs.im/callback',
+    callbackURL: 'https://sso.scs.im/auth/showingcloud/callback',
   },
   (token, tokenSecret, profile, done) => done(null, profile));
 };
