@@ -11,8 +11,8 @@ module.exports = (list) => {
   return new OIDCStrategy({
     clientID: config.oidcClientId,
     clientSecret: config.oidcClientSecret,
-    authorizationURL: 'https://auth.scs.im/auth',
-    tokenURL: 'https://auth.scs.im/token',
+    authorizationURL: 'https://auth.scs.im/oidc/auth',
+    tokenURL: 'https://auth.scs.im/oidc/token',
     callbackURL: 'https://sso.scs.im/auth/showingcloud/callback',
   },
   (token, tokenSecret, profile, done) => done(null, profile));
