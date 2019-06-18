@@ -24,8 +24,6 @@ Passport.use(require('./providers/weibo')(providerList));
 Passport.use(require('./providers/teambition')(providerList));
 Passport.use(require('./providers/dingtalk')(providerList));
 
-global.IdentityFederation = IdentityFederation(providerList);
-
 Passport.serializeUser((profile, done) => {
   done(null, profile);
 });
@@ -80,11 +78,12 @@ app.get('/login',
     res.render('login');
   });
 
+const identityFederation = IdentityFederation(providerList);
 providerList.forEach((provider) => {
   if (provider === 'openidconnect') {
-    routes(app, provider, 'showingcloud');
+    routes(app, provider, identityFederation, 'showingcloud');
   } else {
-    routes(app, provider);
+    routes(app, provider, identityFederation);
   }
 });
 

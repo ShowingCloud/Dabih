@@ -1,6 +1,6 @@
 const passport = require('passport');
 
-module.exports = (app, provider, path) => {
+module.exports = (app, provider, IdentityFederation, path) => {
   const dir = path || provider;
 
   app.get(`/auth/${dir}`,
@@ -14,8 +14,8 @@ module.exports = (app, provider, path) => {
 
       if (req.session.user) {
         const [identityId, identityProvider] = await Promise.all([
-          global.IdentityFederation.findById(req.session.user._id),
-          global.IdentityFederation.findOne({ [`${provider}Id`]: req.user.id }),
+          IdentityFederation.findById(req.session.user._id),
+          IdentityFederation.findOne({ [`${provider}Id`]: req.user.id }),
         ]);
 
         if (identityId && identityProvider) {
@@ -26,11 +26,11 @@ module.exports = (app, provider, path) => {
             // DO THE OTHER THINGS
           }
         } else {
-          identity = identityId || identityProvider || new global.IdentityFederation();
+          identity = identityId || identityProvider || new IdentityFederation();
         }
       } else {
-        identity = await global.IdentityFederation.findOne({ [`${provider}Id`]: req.user.id }).exec()
-          || new global.IdentityFederation();
+        identity = await IdentityFederation.findOne({ [`${provider}Id`]: req.user.id }).exec()
+          || new IdentityFederation();
       }
 
       identity[`${provider}Id`] = req.user.id;
