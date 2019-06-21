@@ -63,10 +63,8 @@ app.use(Session({
 app.use(Passport.initialize());
 app.use(Passport.session());
 
-
-config.providers.forEach(provider => providerRoutes(app, provider, IdentityFederation));
+providerRoutes(app, IdentityFederation);
 commonRoutes(app);
-
 
 const oidcProvider = new OidcProvider(config.issuer, {
   ...oidcConfig,

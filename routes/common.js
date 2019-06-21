@@ -10,43 +10,42 @@ module.exports = (app) => {
   app.get('/login',
     (req, res) => res.render('login', { providers: config.providers }));
 
-  app.get('/login/:provider',
-    (req, res) => {
-      const provider = config.providers.filter(p => p.directory === req.params.provider);
+  app.get('/login/:dir', (req, res) => {
+    const provider = config.providers.filter(p => p.directory === req.params.dir);
 
-      if (!provider.length) {
-        res.render('login', { providers: config.providers });
-      } else {
-        res.redirect(`/auth/${provider[0].directory}`);
-      }
-    });
+    if (!provider.length) {
+      return res.redirect('/login');
+    }
 
-  app.get('/login/required/:required',
-    (req, res) => {
-      const required = config.providers.filter(p => req.params.required.split(',').includes(p.directory));
+    return res.redirect(`/auth/${provider[0].directory}`);
+  });
 
-      if (!required.length) {
-        res.render('login', { providers: config.providers });
-      } else if (required.length === 1) {
-        res.redirect(`/auth/${required[0].directory}`);
-      } else {
-        res.render('login', { providers: required });
-      }
-    });
+  app.get('/login/required/:required', (req, res) => {
+    const required = config.providers.filter(p => req.params.required.split(',').includes(p.directory));
 
-  app.get('/login/required/:required/allowed/:allowed',
-    (req, res) => {
-      const required = config.providers.filter(p => req.params.required.split(',').includes(p.directory));
-      const allowed = config.providers.filter(p => req.params.allowed.split(',').includes(p.directory));
+    if (!required.length) {
+      return res.redirect('/login');
+    }
+    if (required.length === 1) {
+      return res.redirect(`/auth/${required[0].directory}`);
+    }
 
-      if (!required.length) {
-        res.render('login', { providers: config.providers });
-      } else if (required.length === 1) {
-        res.redirect(`/auth/${required[0].directory}`);
-      } else {
-        res.render('login', { providers: [...new Set([...required, ...allowed])] });
-      }
-    });
+    return res.render('login', { providers: required });
+  });
+
+  app.get('/login/required/:required/allowed/:allowed', (req, res) => {
+    const required = config.providers.filter(p => req.params.required.split(',').includes(p.directory));
+    const allowed = config.providers.filter(p => req.params.allowed.split(',').includes(p.directory));
+
+    if (!required.length) {
+      return res.redirect('/login');
+    }
+    if (required.length === 1) {
+      return res.redirect(`/auth/${required[0].directory}`);
+    }
+
+    return res.render('login', { providers: [...new Set([...required, ...allowed])] });
+  });
 
   app.get('/profile',
     ensureLogin.ensureLoggedIn(),
