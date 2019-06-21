@@ -54,9 +54,9 @@ app.use(Session({
   saveUninitialized: false,
   secret: [config.sessionSecret, ...config.otherSessionSecrets],
   store: new RedisStore({
-    url: config.sessionStorageURL,
+    url: config.redisStorageURL,
     logErrors: true,
-    prefix: 'Dabih-Session:',
+    prefix: config.redisSessionPrefix,
   }),
 }));
 
