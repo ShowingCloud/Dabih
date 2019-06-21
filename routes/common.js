@@ -44,7 +44,7 @@ module.exports = (app) => {
       } else if (required.length === 1) {
         res.redirect(`/auth/${required[0].directory}`);
       } else {
-        res.render('login', { providers: required.concat(allowed) });
+        res.render('login', { providers: [...new Set([...required, ...allowed])] });
       }
     });
 
