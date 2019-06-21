@@ -1,0 +1,12 @@
+module.exports.alipay = require('./alipay');
+module.exports.dingtalk = require('./dingtalk');
+module.exports.facebook = require('./facebook');
+module.exports.github = require('./github');
+module.exports.google = require('./google');
+module.exports.linkedin = require('./linkedin');
+module.exports.meituan = require('./meituan');
+module.exports.openidconnect = require('./openidconnect');
+module.exports.qq = require('./qq');
+module.exports.teambition = require('./teambition');
+module.exports.twitter = require('./twitter');
+module.exports.weibo = require('./weibo');

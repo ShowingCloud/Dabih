@@ -1,28 +1,26 @@
 const Express = require('express');
 const Passport = require('passport');
-const Helmet = require('helmet');
 const Session = require('express-session');
 const RedisStore = require('connect-redis')(Session);
+const OidcProvider = require('oidc-provider');
 
-const routes = require('./providers/routes');
-const config = require('./config/config');
+const commonRoutes = require('./routes/common');
+const providerRoutes = require('./providers/routes');
+const oidcRoutes = require('./providers/oidcRoutes');
+const {
+  config,
+  oidcConfig,
+  clients,
+  keystore,
+} = require('./config/index');
+
+const RedisAdapter = require('./models/redisAdapter');
 require('./models/mongodb');
 const IdentityFederation = require('./models/identityFederation');
+const providers = require('./providers/index');
 
 
-const providerList = [];
-Passport.use(require('./providers/openidconnect')(providerList));
-Passport.use(require('./providers/facebook')(providerList));
-Passport.use(require('./providers/twitter')(providerList));
-Passport.use(require('./providers/google')(providerList));
-Passport.use(require('./providers/github')(providerList));
-Passport.use(require('./providers/qq')(providerList));
-Passport.use(require('./providers/linkedin')(providerList));
-Passport.use(require('./providers/alipay')(providerList));
-Passport.use(require('./providers/meituan')(providerList));
-Passport.use(require('./providers/weibo')(providerList));
-Passport.use(require('./providers/teambition')(providerList));
-Passport.use(require('./providers/dingtalk')(providerList));
+config.providers.forEach(provider => Passport.use(providers[provider.provider]));
 
 Passport.serializeUser((profile, done) => {
   done(null, profile);
@@ -34,22 +32,20 @@ Passport.deserializeUser((profile, done) => {
 
 
 const app = Express();
-app.use(Helmet());
 
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'ejs');
 
-app.use(Express.static('public'));
-app.use(Express.static(`${__dirname}/node_modules/jquery/dist`));
-app.use(Express.static(`${__dirname}/node_modules/bootstrap/dist`));
-app.use(Express.static(`${__dirname}/node_modules/@fortawesome/fontawesome-free`));
+['public', `${__dirname}/node_modules/jquery/dist`, `${__dirname}/node_modules/bootstrap/dist`,
+  `${__dirname}/node_modules/@fortawesome/fontawesome-free`]
+  .forEach(dir => app.use(Express.static(dir)));
 
 app.use(require('helmet')());
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')(config.sessionSecret));
 app.use(require('body-parser').urlencoded({ extended: true }));
 
-app.set('trust proxy', 1);
+app.enable('trust proxy');
 app.use(Session({
   cookie: {
     secure: true,
@@ -68,39 +64,46 @@ app.use(Passport.initialize());
 app.use(Passport.session());
 
 
-app.get('/',
-  (req, res) => {
-    res.render('home', { user: req.user });
-  });
+config.providers.forEach(provider => providerRoutes(app, provider, IdentityFederation));
+commonRoutes(app);
 
-app.get('/login',
-  (req, res) => {
-    res.render('login');
-  });
 
-const identityFederation = IdentityFederation(providerList);
-providerList.forEach((provider) => {
-  if (provider === 'openidconnect') {
-    routes(app, provider, identityFederation, 'showingcloud');
-  } else {
-    routes(app, provider, identityFederation);
-  }
+const oidcProvider = new OidcProvider(config.issuer, {
+  ...oidcConfig,
+
+  async findById(ctx, id, token) {
+    const account = await IdentityFederation.findById(id);
+    if (account) {
+      return {
+        accountId: id,
+        claims(use, scope, claims, rejected) {
+          return Object.assign({}, account, {
+            sub: id,
+          });
+        },
+      };
+    }
+
+    return null;
+  },
 });
 
-app.get('/profile',
-  require('connect-ensure-login').ensureLoggedIn(),
-  (req, res) => {
-    res.render('profile', { user: req.user });
+let server;
+(async () => {
+  await oidcProvider.initialize({
+    adapter: RedisAdapter,
+    clients,
+    keystore,
   });
 
-app.get('/tos',
-  (req, res) => {
-    res.render('tos');
-  });
+  oidcProvider.defaultHttpOptions = { timeout: 15000 };
+  oidcProvider.proxy = true;
 
-app.get('/pp',
-  (req, res) => {
-    res.render('pp');
-  });
-
-app.listen(config.port);
+  oidcRoutes(app, oidcProvider);
+  app.use('/oidc', oidcProvider.callback);
+  server = app.listen(config.port);
+})().catch((err) => {
+  if (server && server.listening) server.close();
+  console.error(err); // eslint-disable-line no-console
+  process.exitCode = 1;
+});

@@ -36,6 +36,7 @@
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "helmet": "^3.18.0",
+    "ioredis": "^4.10.0",
     "jquery": "^3.4.1",
     "moment": "^2.24.0",
     "mongoose": "^5.5.15",
