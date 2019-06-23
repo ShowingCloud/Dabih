@@ -12,12 +12,12 @@ const {
   oidcConfig,
   clients,
   keystore,
-} = require('./config/index');
+} = require('./config');
 
 const RedisAdapter = require('./models/redisAdapter');
 require('./models/mongodb');
 const IdentityFederation = require('./models/identityFederation');
-const providers = require('./providers/index');
+const providers = require('./providers');
 
 
 config.providers.forEach(provider => Passport.use(providers[provider.provider]));
