@@ -22,13 +22,8 @@ const providers = require('./providers');
 
 config.providers.forEach(provider => Passport.use(providers[provider.provider]));
 
-Passport.serializeUser((profile, done) => {
-  done(null, profile);
-});
-
-Passport.deserializeUser((profile, done) => {
-  done(null, profile);
-});
+Passport.serializeUser((profile, done) => done(null, profile));
+Passport.deserializeUser((profile, done) => done(null, profile));
 
 
 const app = Express();
@@ -44,6 +39,7 @@ app.use(require('helmet')());
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')(config.sessionSecret));
 app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('body-parser').json());
 
 app.enable('trust proxy');
 app.use(Session({
@@ -66,25 +62,7 @@ app.use(Passport.session());
 providerRoutes(app, IdentityFederation);
 commonRoutes(app);
 
-const oidcProvider = new OidcProvider(config.issuer, {
-  ...oidcConfig,
-
-  async findById(ctx, id, token) {
-    const account = await IdentityFederation.findById(id);
-    if (account) {
-      return {
-        accountId: id,
-        claims(use, scope, claims, rejected) {
-          return Object.assign({}, account, {
-            sub: id,
-          });
-        },
-      };
-    }
-
-    return null;
-  },
-});
+const oidcProvider = new OidcProvider(config.issuer, oidcConfig);
 
 let server;
 (async () => {

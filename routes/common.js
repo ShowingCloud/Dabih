@@ -40,8 +40,8 @@ module.exports = (app) => {
     if (!required.length) {
       return res.redirect('/login');
     }
-    if (required.length === 1) {
-      return res.redirect(`/auth/${required[0].directory}`);
+    if (req.params.allowed === 'all') {
+      return res.render('login', { providers: [...new Set([...required, ...config.providers])] });
     }
 
     return res.render('login', { providers: [...new Set([...required, ...allowed])] });

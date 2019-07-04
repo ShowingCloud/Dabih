@@ -25,23 +25,18 @@ module.exports = (app, provider) => {
   }
 
   app.get('/oidc/interaction/:grant', setNoCache, async (req, res, next) => {
+    if (req.session.user) {
+      await provider.setProviderSession(req, res, { account: req.session.user._id });
+    }
+
     try {
       const details = await provider.interactionDetails(req);
       const client = await provider.Client.find(details.params.client_id);
 
       if (details.interaction.error === 'login_required') {
-        return res.render('login', {
-          client,
-          details,
-          title: 'Sign-in',
-          params: querystring.stringify(details.params, ',<br/>', ' = ', {
-            encodeURIComponent: value => value,
-          }),
-          interaction: querystring.stringify(details.interaction, ',<br/>', ' = ', {
-            encodeURIComponent: value => value,
-          }),
-        });
+        return res.redirect('/login/required/meituan/allowed/all');
       }
+
       return res.render('interaction', {
         client,
         details,

@@ -11,4 +11,4 @@ module.exports = new OIDCStrategy({
   tokenURL: 'https://auth.scs.im/oidc/token',
   callbackURL: 'https://sso.scs.im/auth/showingcloud/callback',
 },
-(token, tokenSecret, profile, done) => done(null, profile));
+(issuer, sub, profile, jwtClaims, accessToken, refreshToken, tokenResponse, done) => done(null, profile));
