@@ -1,13 +1,12 @@
-<h2>Requiring for interaction: <%= details.interaction.error_description %></h2>
-<h3>
-    Please confirm the following scopes:
-    <ul>
-        <% [...new Set([...details.params.scope.split(' ')])].forEach(scope => { %>
-            <li><%= scope %></li>
-        <% }); %>
-    </ul>
-</h3>
 <form autocomplete="off" action="/oidc/interaction/<%= details.uuid %>/confirm" method="post">
-  <input type="hidden" name="uuid" value="<%= details.uuid %>"/>
-  <button autofocus type="submit" class="login login-submit">Continue</button>
+    <h2>Requiring for interaction: <%= details.interaction.error_description %></h2>
+    <h3>
+        Please confirm the following scopes:<br/>
+        <% [...new Set([...details.params.scope.split(' ')])].forEach(scope => { %>
+            <input type="checkbox" name="scopes[]" value="<%= scope %>" checked /><%= scope %><br/>
+        <% }); %>
+    </h3>
+
+    <input type="hidden" name="uuid" value="<%= details.uuid %>"/>
+    <button autofocus type="submit" class="login login-submit">Continue</button>
 </form>

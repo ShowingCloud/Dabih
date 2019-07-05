@@ -26,6 +26,7 @@ module.exports = (app, provider) => {
 
   app.get('/oidc/interaction/:grant', setNoCache, async (req, res, next) => {
     if (req.session.user) {
+      // eslint-disable-next-line no-underscore-dangle
       await provider.setProviderSession(req, res, { account: req.session.user._id });
     }
 
@@ -55,7 +56,14 @@ module.exports = (app, provider) => {
 
   app.post('/oidc/interaction/:grant/confirm', setNoCache, async (req, res, next) => {
     try {
-      const result = { consent: {} };
+      const details = await provider.interactionDetails(req);
+      const result = {
+        consent: {
+          rejectedScopes: details.params.scope.split(' ')
+            .filter(x => !req.body.scopes.includes(x)),
+          rejectedClaims: [],
+        },
+      };
       await provider.interactionFinished(req, res, result);
     } catch (err) {
       next(err);
@@ -64,7 +72,7 @@ module.exports = (app, provider) => {
 
   app.post('/oidc/interaction/:grant/login', setNoCache, async (req, res, next) => {
     try {
-      const account = await Account.findByNickname(req.body.login);
+      const account = await Account.findByNickname(req.body.login); // eslint-disable-line no-undef
 
       const result = {
         login: {
