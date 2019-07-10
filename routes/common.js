@@ -14,6 +14,7 @@ module.exports = (app) => {
     const provider = config.providers.filter(p => p.directory === req.params.dir);
 
     if (!provider.length) {
+      console.log(`Invalid login request for ${req.params.dir}`); // eslint-disable-line no-console
       return res.redirect('/login');
     }
 
@@ -24,6 +25,7 @@ module.exports = (app) => {
     const required = config.providers.filter(p => req.params.required.split(',').includes(p.directory));
 
     if (!required.length) {
+      console.log(`Invalid login request for ${req.params.required}`); // eslint-disable-line no-console
       return res.redirect('/login');
     }
     if (required.length === 1) {
@@ -38,6 +40,7 @@ module.exports = (app) => {
     const allowed = config.providers.filter(p => req.params.allowed.split(',').includes(p.directory));
 
     if (!required.length) {
+      console.log(`Invalid login request for ${req.params.required}`); // eslint-disable-line no-console
       return res.redirect('/login');
     }
     if (req.params.allowed === 'all') {

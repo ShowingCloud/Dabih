@@ -1,5 +1,6 @@
 const passport = require('passport');
 
+const RefreshToken = require('./refreshToken');
 const config = require('../config/config');
 
 
@@ -8,6 +9,7 @@ module.exports = (app, IdentityFederation) => {
     const provider = config.providers.filter(p => p.directory === req.params.directory);
 
     if (!provider.length) {
+      console.log(`Invalid auth request for ${req.params.directory}`); // eslint-disable-line no-console
       return res.redirect('/login');
     }
 
@@ -18,6 +20,7 @@ module.exports = (app, IdentityFederation) => {
     const provider = config.providers.filter(p => p.directory === req.params.directory);
 
     if (!provider.length) {
+      console.log(`Invalid callback for ${req.params.directory}`); // eslint-disable-line no-console
       return res.redirect('/login');
     }
 
@@ -30,6 +33,7 @@ module.exports = (app, IdentityFederation) => {
     let identity;
 
     if (!req.params.provider) {
+      console.log(`Provider unset for ${req.params.directory}`); // eslint-disable-line no-console
       return res.redirect('/login');
     }
 
@@ -54,12 +58,41 @@ module.exports = (app, IdentityFederation) => {
       identity = await IdentityFederation.findOne({ [`${req.params.provider}Id`]: req.user.id }).exec()
         || new IdentityFederation();
     }
-
     identity[`${req.params.provider}Id`] = req.user.id;
     identity[`${req.params.provider}Profile`] = req.user._json || req.user._profileJson; // eslint-disable-line no-underscore-dangle
+    identity[`${req.params.provider}Access`] = req.user._accessToken; // eslint-disable-line no-underscore-dangle
+    identity[`${req.params.provider}Refresh`] = req.user._refreshToken; // eslint-disable-line no-underscore-dangle
     await identity.save();
 
     req.session.user = identity;
+    return res.redirect('/');
+  });
+
+  app.get('/auth/:directory/refreshTokens', (req, res) => {
+    const provider = config.providers.filter(p => p.directory === req.params.directory);
+
+    if (!provider.length) {
+      console.log(`Could not refresh tokens for ${req.params.directory}`); // eslint-disable-line no-console
+      return res.redirect('/login');
+    }
+
+    const { RefreshTokenClient } = RefreshToken(provider[0].provider);
+    const stream = RefreshTokenClient.scanStream({
+      match: `Dabih-Token:${provider[0].provider}:*`,
+    });
+    stream.on('data', keys => keys.forEach(async (key) => {
+      const id = key.split(':')[2];
+      if (id !== 'config') {
+        // eslint-disable-next-line no-underscore-dangle
+        const ret = await passport._strategies[provider[0].provider].refreshToken(id);
+        if (ret) {
+          const identity = await IdentityFederation.findById(id).exec();
+          identity[`${provider[0].provider}Access`] = ret;
+          await identity.save();
+        }
+      }
+    }));
+
     return res.redirect('/');
   });
 };
