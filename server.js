@@ -1,3 +1,5 @@
+require('newrelic');
+
 const Express = require('express');
 const Passport = require('passport');
 const Session = require('express-session');
