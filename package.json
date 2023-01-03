@@ -42,7 +42,7 @@
     "mongoose": "^5.7.5",
     "morgan": "^1.9.1",
     "newrelic": "^5.11.0",
-    "oidc-provider": "^5.5.6",
+    "oidc-provider": "^8.0.0",
     "passport": "^0.2.2",
     "passport-facebook": "^3.0.0",
     "passport-github": "^1.1.0",
