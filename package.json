@@ -27,7 +27,7 @@
     "@fortawesome/fontawesome-free": "^5.10.1",
     "@sokratis/passport-linkedin-oauth2": "^2.1.0",
     "body-parser": "^1.20.3",
-    "bootstrap": "^4.3.1",
+    "bootstrap": "^5.0.0",
     "brand-colors": "^2.0.1",
     "connect-ensure-login": "^0.1.1",
     "connect-redis": "^6.1.3",
