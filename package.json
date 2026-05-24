@@ -41,7 +41,7 @@
     "moment": "^2.29.4",
     "mongoose": "^8.9.5",
     "morgan": "^1.10.1",
-    "newrelic": "^11.23.2",
+    "newrelic": "^14.0.0",
     "oidc-provider": "^8.4.5",
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
